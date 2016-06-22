@@ -1,6 +1,8 @@
-a b d e f g h j 
-
+Fate/stay night's gameplay requires little interaction
+from the player as most of the game's duration is spent on reading
+the text that appears, representing either dialogue between the
+characters or the inner thoughts of the protagonist.
 @
-
-a b c d e-
-
+Often, players will come to a "decision point" where they are given the
+chance to choose from options displayed on the screen,
+typically two to three at a time.
