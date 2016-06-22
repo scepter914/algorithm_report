@@ -18,6 +18,7 @@ struct list{
 };
 
 int search_hash_table(char *key);
+int search_hash_table2(char *key);
 int hash1(char *s);
 int hash2(int h1);
 //int primes(int max);
@@ -31,7 +32,7 @@ struct list table[TABLESIZE]; //ハッシュテーブル
 int main(void){
     int crush_count = 0;
     int crush_countmax = 1;
-    
+    printf("hoge\n");
     //初期化
     for(int i = 0; i < HASHSIZE; i++){
         memset(table[i].word, '\0', WORDSIZE);
@@ -49,10 +50,11 @@ int main(void){
          * アドレス範囲 addr ~ addr + filesize - 1
          * %c, *(addr + i)
          * %s, (char *)(addr + i) */
-    int t = 0; //全体入力t文字目
+    long int t = 0; //全体入力t文字目
     int letter = 0; //単語letter文字目
     char buff[WORDSIZE] = {'\0'}; //単語を収納する配列
     while( *(addr + t) != '@'){ //前半ハッシュテーブルへの登録
+        printf("%d ", t);
         char *temp = addr + t;
         if( *temp == ' ' || *temp == ',' || *temp == '.' || *temp == '\'' ||
                 *temp == '-' || *temp == '\n' || *temp == ':' ||
@@ -72,7 +74,30 @@ int main(void){
         }
         ++t;
     }
-    
+    printf("%d",t);
+    ++t;
+    /*
+    while(t < (filesize - 1)){ //前半ハッシュテーブルへの登録
+        char *temp = addr + t;
+        if( *temp == ' ' || *temp == ',' || *temp == '.' || *temp == '\'' ||
+                *temp == '-' || *temp == '\n' || *temp == ':' ||
+                *temp == ';' || *temp == '?' || *temp == '!' || *temp == '(' ||
+                *temp == ')' || *temp == '&' ){
+            if (buff[0] != '\0'){ //単語の区切り
+                crush_count = search_hash_table2(buff);
+                memset(buff, '\0', WORDSIZE);
+                letter = 0;
+            }
+        } else {
+            buff[letter] = tolower(*temp);
+            ++letter;
+        }
+        if(crush_count > crush_countmax){ //最大衝突回数
+            crush_countmax = crush_count;
+        }
+        ++t;
+    }
+    */
     //後半ハッシュテーブルへの登録
     //for(t++ ; t < (filesize - 1); t++){ //@を飛ばす
         //printf("%d %c\n", t, *(addr + t));
@@ -81,9 +106,9 @@ int main(void){
     
     for(int i = 0; i <= HASHSIZE; ++i){ //ハッシュテーブル内容表示
         if(table[i].word[0] == '\0'){
-            printf("%3d .\n", i);
+           // printf("%3d .\n", i);
         } else {
-            printf("%3d %s %d\n", i, table[i].word, table[i].count_1 );
+            //printf("%3d %s %d\n", i, table[i].word, table[i].count_1 );
         }
     }
     printf("crush_countmax %d\n", crush_countmax);
@@ -105,6 +130,31 @@ int search_hash_table(char *key){
         } else if (strcmp(table[h].word, key) == 0){ //単語が一致
             //printf("count %s\n",table[h].word);
             table[h].count_1 += 1; //カウンターを増やす
+            break; 
+        } else {
+            h2 = hash2(h1); // ハッシュ関数値再計算
+            ++crush_count;// 衝突回数カウント
+            //printf("rehash %d\n",crush_count);
+        }
+    }
+    --crush_count;
+    return(crush_count);
+}
+
+int search_hash_table2(char *key){
+    int h, h1, h2 = 0;
+    int crush_count = 1; //衝突回数
+    h1 = hash1(key); //ハッシュ関数1 値計算
+    while(1){
+        h = (h1 + h2 * crush_count) % HASHSIZE; // ハッシュテーブル番号計算
+        if(table[h].word[0] == '\0'){ //単語がない時 
+            strcpy(table[h].word, key); //単語登録
+            //printf("add %s\n", table[h].word);
+            table[h].count_2 += 1; 
+            break;
+        } else if (strcmp(table[h].word, key) == 0){ //単語が一致
+            //printf("count %s\n",table[h].word);
+            table[h].count_2 += 1; //カウンターを増やす
             break; 
         } else {
             h2 = hash2(h1); // ハッシュ関数値再計算
