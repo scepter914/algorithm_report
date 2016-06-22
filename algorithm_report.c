@@ -1,9 +1,16 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
 
-#define HASHSIZE 97    //ハッシュテーブルサイズ
+
+
+#define HASHSIZE 23    //ハッシュテーブルサイズ
     //primes(n); でn以下の最大の素数を計算可能
 
 int add_hash_table(char *key);
@@ -22,13 +29,24 @@ int main(void){
     char buff[80];
     int crush_count;
     int crush_countmax = 1;
-    printf("Hash Size=%d\n", HASHSIZE);
-    while(1){ //ハッシュテーブルへの登録
+   
+    
+    int filesize, pagesize, mmapsize;
+    char *addr;
+    filesize = lseek(0,0,SEEK_END);
+    pagesize = getpagesize();
+    mmapsize = (filesize + (pagesize - 1)) / pagesize * pagesize;
+    addr = mmap(0, mmapsize, PROT_READ, MAP_PRIVATE, 0, 0);
+    printf("hoge");
+    printf("%s\n", (char *)addr[1]); 
+    for(int i = 0; addr[i] == EOF; i++){ //ハッシュテーブルへの登録
+        /*
         printf("文字列データ(MAX=20) : ");
         gets(buff);
-        if(!strcmp(buff, "0")){
+        if(!strcmp(buff, EOF)){
             break;
         }
+        */
         crush_count = add_hash_table(buff);
         if(crush_count > crush_countmax){ //最大衝突回数
             crush_countmax = crush_count;
@@ -36,15 +54,6 @@ int main(void){
     }
     printf("ハッシュ関数最大再計算回数 = %d\n", crush_countmax);
     printf("Return key\n");
-    gets(buff);
-    for(int i = 0; i <= HASHSIZE; ++i){ //ハッシュテーブル格納状況表示
-        if(t[i][0] == '\0'){
-            printf("0 ");
-        } else {
-            printf("1 ");
-        }
-    }
-    printf("\nReturn key\n");
     gets(buff);
     for(int i = 0; i <= HASHSIZE; ++i){ //ハッシュテーブル内容表示
         if(t[i][0] == '\0'){
