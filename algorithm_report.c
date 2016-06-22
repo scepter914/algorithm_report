@@ -2,13 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <sys/mman.h>
-
-
 
 #define HASHSIZE 23    //ハッシュテーブルサイズ
     //primes(n); でn以下の最大の素数を計算可能
@@ -29,7 +24,6 @@ int main(void){
     char buff[80];
     int crush_count;
     int crush_countmax = 1;
-   
     
     int filesize, pagesize, mmapsize;
     char *addr;
@@ -37,8 +31,9 @@ int main(void){
     pagesize = getpagesize();
     mmapsize = (filesize + (pagesize - 1)) / pagesize * pagesize;
     addr = mmap(0, mmapsize, PROT_READ, MAP_PRIVATE, 0, 0);
-    printf("hoge");
-    printf("%s\n", (char *)addr[1]); 
+        /* %c, *(addr + i)
+         * %s, (char *)(addr + i) */
+
     for(int i = 0; addr[i] == EOF; i++){ //ハッシュテーブルへの登録
         /*
         printf("文字列データ(MAX=20) : ");
