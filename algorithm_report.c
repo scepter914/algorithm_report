@@ -6,12 +6,13 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 
-#define TABLESIZE 50//50000 
-#define HASHSIZE 47//49999    //ハッシュテーブルサイズ
+#define TABLESIZE 50000 //50
+#define HASHSIZE 49999 //47   //ハッシュテーブルサイズ
     //primes(n); でn以下の最大の素数を計算可能
+#define WORDSIZE 30
 
 struct list{
-    char word[20];
+    char word[WORDSIZE];
     int count_1;
     int count_2;
 };
@@ -34,7 +35,7 @@ int main(void){
     
     //初期化
     for(int i = 0; i < HASHSIZE; i++){
-        memset(table[i].word, '\0', 20);
+        memset(table[i].word, '\0', WORDSIZE);
         table[i].count_1 = 0;
         table[i].count_2 = 0;
     }
@@ -51,22 +52,16 @@ int main(void){
          * %s, (char *)(addr + i) */
     int t = 0; //全体入力t文字目
     int letter = 0; //単語letter文字目
-    char buff[20] = {'\0'}; //単語を収納する配列
+    char buff[WORDSIZE] = {'\0'}; //単語を収納する配列
     while( *(addr + t) != '@'){ //前半ハッシュテーブルへの登録
         char *temp = addr + t;
         if( *temp == ' ' || *temp == ',' || *temp == '.' || *temp == '\'' ||
                 *temp == '-' || *temp == '\n' || *temp == ':' ||
-                *temp == ';' || *temp == '?' || *temp == '!'){
+                *temp == ';' || *temp == '?' || *temp == '!' || *temp == '(' ||
+                *temp == ')' || *temp == '&' ){
             if (buff[0] != '\0'){ //単語の区切り
-<<<<<<< HEAD
                 crush_count = search_hash_table_1(buff);
                 memset(buff, '\0', WORDSIZE);
-=======
-                crush_count = search_hash_table(buff);
-                word_c++;
-                printf("%s count %d \n\n",buff, word_c);
-                memset(buff, '\0', 20);
->>>>>>> parent of 3d717ac... 前半は恐らく大丈夫
                 letter = 0;
             }
         } else {
@@ -78,12 +73,7 @@ int main(void){
         }
         ++t;
     }
-<<<<<<< HEAD
     printf("hoge");
-=======
-    printf("*********************************************************\n");
-    
->>>>>>> parent of 3d717ac... 前半は恐らく大丈夫
     //後半ハッシュテーブルへの登録
     ++t; //@を飛ばす
     while(t < (filesize - 1)){ 
@@ -128,17 +118,17 @@ int search_hash_table_1(char *key){
         h = (h1 + h2 * crush_count) % HASHSIZE; // ハッシュテーブル番号計算
         if(table[h].word[0] == '\0'){ //単語がない時 
             strcpy(table[h].word, key); //単語登録
-            printf("add %s\n", table[h].word);
+            //printf("add %s\n", table[h].word);
             table[h].count_1 += 1; 
             break;
         } else if (strcmp(table[h].word, key) == 0){ //単語が一致
-            printf("count %s\n",table[h].word);
+            //printf("count %s\n",table[h].word);
             table[h].count_1 += 1; //カウンターを増やす
             break; 
         } else {
             h2 = hash2(h1); // ハッシュ関数値再計算
             ++crush_count;// 衝突回数カウント
-            printf("rehash %d\n",crush_count);
+            //printf("rehash %d\n",crush_count);
         }
     }
     --crush_count;
