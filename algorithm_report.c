@@ -20,7 +20,7 @@ struct list{
 int search_hash_table(char *key);
 int hash1(char *s);
 int hash2(int h1);
-int primes(int max);
+//int primes(int max);
 
 struct list table[TABLESIZE]; //ハッシュテーブル
     /* table[i] 
@@ -49,7 +49,6 @@ int main(void){
          * アドレス範囲 addr ~ addr + filesize - 1
          * %c, *(addr + i)
          * %s, (char *)(addr + i) */
-    int word_c = 0;
     int t = 0; //全体入力t文字目
     int letter = 0; //単語letter文字目
     char buff[WORDSIZE] = {'\0'}; //単語を収納する配列
@@ -61,8 +60,6 @@ int main(void){
                 *temp == ')' || *temp == '&' ){
             if (buff[0] != '\0'){ //単語の区切り
                 crush_count = search_hash_table(buff);
-                word_c++;
-                //printf("%s count %d \n\n",buff, word_c);
                 memset(buff, '\0', WORDSIZE);
                 letter = 0;
             }
