@@ -13,7 +13,7 @@ int main(void){
     addr = mmap(0, mmapsize, PROT_READ, MAP_PRIVATE, 0, 0);
     printf("hoge\n");
     for(int i = 0; i < 10; i++){
-        printf("%s\n", /*(char*)*/ *(addr + i));
+        printf("%c\n", *(addr + i));
     }
 }
 
