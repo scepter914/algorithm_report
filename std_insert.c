@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int a = 50000;
+int a = 100000;
 
 int prime(int max){
     int m, i;

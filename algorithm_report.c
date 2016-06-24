@@ -6,8 +6,8 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 
-#define TABLESIZE 50000   
-#define HASHSIZE 49999 //ハッシュテーブルサイズ
+#define TABLESIZE 80000   
+#define HASHSIZE 79999 //ハッシュテーブルサイズ
     //primes(n); でn以下の最大の素数を計算可能
 #define WORDSIZE 25
 
@@ -216,7 +216,7 @@ int search_hash_table(const char *key, const int *half){
 int hash1(const char *s){
     int x = 0;
     do{
-        x = (x * 0x80 + *s - 0x20) % HASHSIZE;
+        x = (x * 256 + *s - 64) % HASHSIZE;
     } while(*++s);
     return(x);
 }

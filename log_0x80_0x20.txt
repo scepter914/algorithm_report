@@ -1,0 +1,16 @@
+ハッシュ関数最大再計算回数 = 48
+crush_countmax 48
+
+後半出現しない単語で、前半でのランキング
+0 thou 5348
+1 thee 3108
+2 exeunt 1061
+3 hast 588
+4 omne 489
+
+前半出現しない単語で、後半でのランキング
+0 holmes 2930
+1 mr 1728
+2 watson 1024
+3 don't 467
+4 sherlock 403
