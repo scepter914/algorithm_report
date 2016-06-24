@@ -100,45 +100,89 @@ int main(void){
     */
     printf("crush_countmax %d\n\n", crush_countmax);
     //ここから多い回数数える
-    int rank_hash[10] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}; //0-4前半,5-9後半
+    int rank_hash_1[5] = {-1,-1,-1,-1,-1}; //前半
+    int rank_hash_2[5] = {-1,-1,-1,-1,-1}; //後半
     for(int i = 0; i < HASHSIZE; i++){
         if((table[i].word[0] != '\0') && (table[i].count_2 == 0)){ //後半出現しない
-            if(rank_hash[0] == -1){ //-1が残っている
+            if(rank_hash_1[0] == -1){ //-1が残っている
                 for(int j = 4; j >= 0; j--){
-                    if(rank_hash[j] == -1){
-                        rank_hash[j] = i;
-                        printf("rank %d = %d\n",j, i);
+                    if(rank_hash_1[j] == -1){
+                        rank_hash_1[j] = i;
                         break;
-                    } else if (table[i].count_1 <= table[rank_hash[j]].count_1) {
+                    } else if (table[i].count_1 <= table[rank_hash_1[j]].count_1) {
                         for(int k = 0; k < j; k++){
-                            rank_hash[k] = rank_hash[k + 1]; 
-                            printf("rank %d %d\n", k, rank_hash[k]);
+                            rank_hash_1[k] = rank_hash_1[k + 1]; 
                         }
-                        rank_hash[j] = i;
-                        printf("rank%d = table[%d] %dtime\n", j, rank_hash[j], table[rank_hash[j]].count_1);
+                        rank_hash_1[j] = i;
                         break;
                     }
                 }
-            } /*else {
-                for(int j = 4; j >= 0; j--){
-                    if (table[i].count_1 < table[rank_hash[j]].count_1){ //table[i]はj位よりは小さい
-                        printf("%d\n",i);
-                        if(j < 4){ //暫定5位以内なら
-                            for(int k = 4; k > j; --k){
-                                printf("hoge");
-                                rank_hash[k + 1] = rank_hash[k];
-                            }
-                            rank_hash[j] = i;
-                        }
-                        break;
-                    } //breakしない == もっと上の順位である
+            } else {
+                int j = 4;
+                while((j > -1) && (table[i].count_1 > table[rank_hash_1[j]].count_1)){
+                    --j; 
                 } 
-            }*/
+                if(j < 4){ //暫定5位以内なら
+                    //printf("table[%d] %s nowrank%d %dtime\n", i, table[i].word, j, table[i].count_1);
+                    for(int k = 4; k > (j + 1); --k){
+                        //printf("%d\n", k);
+                        rank_hash_1[k] = rank_hash_1[k - 1];
+                    }
+                    rank_hash_1[j + 1] = i;
+                }
+            }
         }
+        /*
+        for(int s = 0; s < 5; s++){
+            printf("%d %d %s %d\n", s, rank_hash_1[s],table[rank_hash_1[s]].word, table[rank_hash_1[s]].count_1);
+        }
+        printf("\n");
+        */
+    }
+    for(int i = 0; i < HASHSIZE; i++){
+        if((table[i].word[0] != '\0') && (table[i].count_1 == 0)){ //前半出現しない
+            if(rank_hash_2[0] == -1){ //-1が残っている
+                for(int j = 4; j >= 0; j--){
+                    if(rank_hash_2[j] == -1){
+                        rank_hash_2[j] = i;
+                        break;
+                    } else if (table[i].count_2 <= table[rank_hash_2[j]].count_2) {
+                        for(int k = 0; k < j; k++){
+                            rank_hash_2[k] = rank_hash_2[k + 1]; 
+                        }
+                        rank_hash_2[j] = i;
+                        break;
+                    }
+                }
+            } else {
+                int j = 4;
+                while((j > -1) && (table[i].count_2 > table[rank_hash_2[j]].count_2)){
+                    --j; 
+                } 
+                if(j < 4){ //暫定5位以内なら
+                    //printf("table[%d] %s nowrank%d %dtime\n", i, table[i].word, j, table[i].count_2);
+                    for(int k = 4; k > (j + 1); --k){
+                        //printf("%d\n", k);
+                        rank_hash_2[k] = rank_hash_2[k - 1];
+                    }
+                    rank_hash_2[j + 1] = i;
+                }
+            }
+        }
+        /*
+        for(int s = 0; s < 5; s++){
+            printf("%d %d %s %d\n", s, rank_hash_1[s],table[rank_hash_1[s]].word, table[rank_hash_1[s]].count_2);
+        }
+        printf("\n");
+        */
     }
     printf("後半出現しない単語で、前半でのランキング\n");
     for(int i = 0; i < 5; i++){
-        printf("%d %d %s %d\n", i, rank_hash[i],table[rank_hash[i]].word, table[rank_hash[i]].count_1);
+        printf("%d %s %d\n", i, table[rank_hash_1[i]].word, table[rank_hash_1[i]].count_1);
+    }
+    printf("前半出現しない単語で、後半でのランキング\n");
+    for(int i = 0; i < 5; i++){
+        printf("%d %s %d\n", i, table[rank_hash_2[i]].word, table[rank_hash_2[i]].count_2);
     }
     /*
     half = 0;
