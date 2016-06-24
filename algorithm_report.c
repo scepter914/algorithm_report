@@ -6,8 +6,8 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 
-#define TABLESIZE 40000 //54 //40000 
-#define HASHSIZE 39999 //53 //39999    //ハッシュテーブルサイズ
+#define TABLESIZE 50000 //54  
+#define HASHSIZE 49999 //53    //ハッシュテーブルサイズ
     //primes(n); でn以下の最大の素数を計算可能
 #define WORDSIZE 25
 
@@ -89,7 +89,7 @@ int main(void){
         //printf("%d %c\n", t, *(addr + t));
     //}
     //printf("ハッシュ関数最大再計算回数 = %d\n", crush_countmax);
-    
+    /*
     for(int i = 0; i <= HASHSIZE; ++i){ //ハッシュテーブル内容表示
         if(table[i].word[0] == '\0'){
             printf("%3d .\n", i);
@@ -97,9 +97,50 @@ int main(void){
             printf("%3d %s %d %d\n", i, table[i].word, table[i].count_1,table[i].count_2 );
         }
     }
-    /*
+    */
     printf("crush_countmax %d\n\n", crush_countmax);
+    //ここから多い回数数える
+    int rank_hash[10] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}; //0-4前半,5-9後半
+    for(int i = 0; i < HASHSIZE; i++){
+        if((table[i].word[0] != '\0') && (table[i].count_2 == 0)){ //後半出現しない
+            if(rank_hash[0] == -1){ //-1が残っている
+                for(int j = 4; j >= 0; j--){
+                    if(rank_hash[j] == -1){
+                        rank_hash[j] = i;
+                        printf("rank %d = %d\n",j, i);
+                        break;
+                    } else if (table[i].count_1 <= table[rank_hash[j]].count_1) {
+                        for(int k = 0; k < j; k++){
+                            rank_hash[k] = rank_hash[k + 1]; 
+                            printf("rank %d %d\n", k, rank_hash[k]);
+                        }
+                        rank_hash[j] = i;
+                        printf("rank%d = table[%d] %dtime\n", j, rank_hash[j], table[rank_hash[j]].count_1);
+                        break;
+                    }
+                }
+            } /*else {
+                for(int j = 4; j >= 0; j--){
+                    if (table[i].count_1 < table[rank_hash[j]].count_1){ //table[i]はj位よりは小さい
+                        printf("%d\n",i);
+                        if(j < 4){ //暫定5位以内なら
+                            for(int k = 4; k > j; --k){
+                                printf("hoge");
+                                rank_hash[k + 1] = rank_hash[k];
+                            }
+                            rank_hash[j] = i;
+                        }
+                        break;
+                    } //breakしない == もっと上の順位である
+                } 
+            }*/
+        }
+    }
     printf("後半出現しない単語で、前半でのランキング\n");
+    for(int i = 0; i < 5; i++){
+        printf("%d %d %s %d\n", i, rank_hash[i],table[rank_hash[i]].word, table[rank_hash[i]].count_1);
+    }
+    /*
     half = 0;
     quicksort(&half, 0, HASHSIZE);
     int rank = 0;
