@@ -6,8 +6,8 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 
-#define TABLESIZE 50000 //54  
-#define HASHSIZE 49999 //53    //ハッシュテーブルサイズ
+#define TABLESIZE 50000   
+#define HASHSIZE 49999 //ハッシュテーブルサイズ
     //primes(n); でn以下の最大の素数を計算可能
 #define WORDSIZE 25
 
@@ -19,7 +19,7 @@ typedef struct {
 
 int search_hash_table(const char *key, const int *half);
 int hash1(const char *s);
-int hash2(int h1);
+int hash2(int *h1);
 //void quicksort(const int *half, int left, int right);
 //int primes(int max);
 
@@ -206,7 +206,7 @@ int search_hash_table(const char *key, const int *half){
             }
             break; 
         } else {
-            h2 = hash2(h1); // ハッシュ関数値再計算
+            h2 = hash2(&h1); // ハッシュ関数値再計算
             ++crush_count;// 衝突回数カウント
         }
     }
@@ -222,11 +222,11 @@ int hash1(const char *s){
     return(x);
 }
 
-int hash2(int h1){
-	if(h1 == 0){
+int hash2(int *h1){
+	if(*h1 == 0){
         return(1);
 	} else {
-        return(HASHSIZE - h1);
+        return(HASHSIZE - *h1);
 	}
 }
 
