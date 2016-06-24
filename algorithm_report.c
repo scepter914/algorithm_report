@@ -20,8 +20,7 @@ typedef struct {
 int search_hash_table(const char *key, const int *half);
 int hash1(const char *s);
 int hash2(int h1);
-int comp1(const void *c1, const void *c2);
-void quicksort(const int *half, int left, int right);
+//void quicksort(const int *half, int left, int right);
 //int primes(int max);
 
 list table[TABLESIZE]; //ハッシュテーブル
@@ -50,16 +49,14 @@ int main(void){
          * アドレス範囲 addr ~ addr + filesize - 1
          * %c, *(addr + i)
          * %s, (char *)(addr + i) */
+    
     int t = 0; //全体入力t文字目
     int letter = 0; //単語letter文字目
     int half = 0; //1は後半
     char buff[WORDSIZE] = {'\0'}; //単語を収納する配列
-    int word_c = 0;
     while(t < (filesize - 1)){ //前半ハッシュテーブルへの登録
-        //printf("%d %c\n", t, *(addr + t));
         char *temp = addr + t;
         if (*temp == '@'){
-            //printf("***************");
             half = 1;    
             //break;
         } else {
@@ -77,7 +74,6 @@ int main(void){
                             buff[letter - 1] = '\0';
                         }
                         crush_count = search_hash_table(buff, &half);
-                        //printf("%d %s\n", word_c++, buff);
                         memset(buff, '\0', WORDSIZE);
                         letter = 0;
                     }
@@ -97,12 +93,8 @@ int main(void){
         }
         ++t;
     }
-    //後半ハッシュテーブルへの登録
-    //for(t++ ; t < (filesize - 1); t++){ //@を飛ばす
-        //printf("%d %c\n", t, *(addr + t));
-    //}
-    //printf("ハッシュ関数最大再計算回数 = %d\n", crush_countmax);
-    /* 
+    printf("ハッシュ関数最大再計算回数 = %d\n", crush_countmax);
+    /*
     for(int i = 0; i <= HASHSIZE; ++i){ //ハッシュテーブル内容表示
         if(table[i].word[0] == '\0'){
             printf("%3d .\n", i);
@@ -112,9 +104,11 @@ int main(void){
     }
     */ 
     printf("crush_countmax %d\n\n", crush_countmax);
-    //ここから多い回数数える
+    
+    //ここからランキングを考える
     int rank_hash_1[5] = {-1,-1,-1,-1,-1}; //前半
     int rank_hash_2[5] = {-1,-1,-1,-1,-1}; //後半
+    //前半ランキング
     for(int i = 0; i < HASHSIZE; i++){
         if((table[i].word[0] != '\0') && (table[i].count_2 == 0)){ //後半出現しない
             if(rank_hash_1[0] == -1){ //-1が残っている
@@ -136,7 +130,6 @@ int main(void){
                     --j; 
                 } 
                 if(j < 4){ //暫定5位以内なら
-                    //printf("table[%d] %s nowrank%d %dtime\n", i, table[i].word, j, table[i].count_1);
                     for(int k = 4; k > (j + 1); --k){
                         //printf("%d\n", k);
                         rank_hash_1[k] = rank_hash_1[k - 1];
@@ -145,13 +138,8 @@ int main(void){
                 }
             }
         }
-        /*
-        for(int s = 0; s < 5; s++){
-            printf("%d %d %s %d\n", s, rank_hash_1[s],table[rank_hash_1[s]].word, table[rank_hash_1[s]].count_1);
-        }
-        printf("\n");
-        */
     }
+    //後半ランキング
     for(int i = 0; i < HASHSIZE; i++){
         if((table[i].word[0] != '\0') && (table[i].count_1 == 0)){ //前半出現しない
             if(rank_hash_2[0] == -1){ //-1が残っている
@@ -173,43 +161,22 @@ int main(void){
                     --j; 
                 } 
                 if(j < 4){ //暫定5位以内なら
-                    //printf("table[%d] %s nowrank%d %dtime\n", i, table[i].word, j, table[i].count_2);
                     for(int k = 4; k > (j + 1); --k){
-                        //printf("%d\n", k);
                         rank_hash_2[k] = rank_hash_2[k - 1];
                     }
                     rank_hash_2[j + 1] = i;
                 }
             }
         }
-        /*
-        for(int s = 0; s < 5; s++){
-            printf("%d %d %s %d\n", s, rank_hash_1[s],table[rank_hash_1[s]].word, table[rank_hash_1[s]].count_2);
-        }
-        printf("\n");
-        */
     }
     printf("後半出現しない単語で、前半でのランキング\n");
     for(int i = 0; i < 5; i++){
         printf("%d %s %d\n", i, table[rank_hash_1[i]].word, table[rank_hash_1[i]].count_1);
     }
-    printf("前半出現しない単語で、後半でのランキング\n");
+    printf("\n前半出現しない単語で、後半でのランキング\n");
     for(int i = 0; i < 5; i++){
         printf("%d %s %d\n", i, table[rank_hash_2[i]].word, table[rank_hash_2[i]].count_2);
     }
-    /*
-    half = 0;
-    quicksort(&half, 0, HASHSIZE);
-    int rank = 0;
-    int rank_nonhalf = 1; //題意に沿う順位
-    while(rank_nonhalf < 6){
-        if(table[rank].count_2 == 0){
-            printf("rank%d %s %d\n", rank_nonhalf, table[rank].word, table[rank].count_1);
-            ++rank_nonhalf;
-        }
-        ++rank;
-    }
-    */
 }
 
 
@@ -225,7 +192,6 @@ int search_hash_table(const char *key, const int *half){
         }
         if(table[h].word[0] == '\0'){ //単語がない時 
             strcpy(table[h].word, key); //単語登録
-            //printf("add %s\n", table[h].word);
             if (*half == 0){
                 table[h].count_1 += 1;
             } else {
@@ -233,7 +199,6 @@ int search_hash_table(const char *key, const int *half){
             }
             break;
         } else if (strcmp(table[h].word, key) == 0){ //単語が一致
-            //printf("count %s\n",table[h].word);
             if (*half == 0){
                 table[h].count_1 += 1;
             } else {
@@ -243,7 +208,6 @@ int search_hash_table(const char *key, const int *half){
         } else {
             h2 = hash2(h1); // ハッシュ関数値再計算
             ++crush_count;// 衝突回数カウント
-            //printf("rehash %d\n",crush_count);
         }
     }
     --crush_count;
@@ -266,6 +230,7 @@ int hash2(int h1){
 	}
 }
 
+/*
 void quicksort(const int *half, int left, int right){
     int i,j;
     int pivot;
@@ -300,10 +265,9 @@ void quicksort(const int *half, int left, int right){
     } else {
     }
 }
-
-// 素数計算
+*/
 /*
-int primes(int max){
+int primes(int max){ // 素数計算
     int m, i;
     for(m = max; m >= 2; --m){
         for(i = max / 2; i >= 2; --i){
