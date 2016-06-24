@@ -69,10 +69,23 @@ int main(void){
                     *temp == ';' || *temp == '?' || *temp == '!' || *temp == '(' ||
                     *temp == ')' || *temp == '&' ){
                 if (buff[0] != '\0'){ //単語の区切り
-                    crush_count = search_hash_table(buff, &half);
-                    //printf("%d %s\n", word_c++, buff);
-                    memset(buff, '\0', WORDSIZE);
-                    letter = 0;
+                    if (*temp == '-' || *temp == '\''){
+                        buff[letter] = *temp;
+                        ++letter;
+                    } else {
+                        if(buff[letter - 1] == '-' || buff[letter - 1] == '\''){
+                            buff[letter - 1] = '\0';
+                        }
+                        crush_count = search_hash_table(buff, &half);
+                        //printf("%d %s\n", word_c++, buff);
+                        memset(buff, '\0', WORDSIZE);
+                        letter = 0;
+                    }
+                } else {
+                    if (*temp == '\'' || *temp == '-'){
+                        buff[letter] = *temp;
+                        ++letter;
+                    }
                 }
             } else {
                 buff[letter] = tolower(*temp);
@@ -89,7 +102,7 @@ int main(void){
         //printf("%d %c\n", t, *(addr + t));
     //}
     //printf("ハッシュ関数最大再計算回数 = %d\n", crush_countmax);
-    /*
+    /* 
     for(int i = 0; i <= HASHSIZE; ++i){ //ハッシュテーブル内容表示
         if(table[i].word[0] == '\0'){
             printf("%3d .\n", i);
@@ -97,7 +110,7 @@ int main(void){
             printf("%3d %s %d %d\n", i, table[i].word, table[i].count_1,table[i].count_2 );
         }
     }
-    */
+    */ 
     printf("crush_countmax %d\n\n", crush_countmax);
     //ここから多い回数数える
     int rank_hash_1[5] = {-1,-1,-1,-1,-1}; //前半
