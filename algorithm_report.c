@@ -131,7 +131,6 @@ int main(void){
                 } 
                 if(j < 4){ //暫定5位以内なら
                     for(int k = 4; k > (j + 1); --k){
-                        //printf("%d\n", k);
                         rank_hash_1[k] = rank_hash_1[k - 1];
                     }
                     rank_hash_1[j + 1] = i;
